@@ -17,56 +17,51 @@
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
     let
       # --- 通用设置 ---
-      username = "zero"; # 你在 `home-manager switch --flake .#zero` 中使用的名字
-      system = "x86_64-linux"; # 例如 "x86_64-linux", "aarch64-linux"
-
-      # --- NixOS 特定设置 ---
-      nixosHostname = "my-nixos-machine";
+      username = "zero"; # Home Manager 用户名
+      system = "x86_64-linux"; # 目标系统架构
 
       # 创建一个 pkgs 实例，方便在各处使用
-      # 注意: 在 NixOS 模块和 Home Manager 模块内部，通常会通过函数参数接收 pkgs
-      # 但在这里定义一个顶层的 pkgs 实例有时也方便
       pkgs = nixpkgs.legacyPackages.${system};
+
+      # Home Manager 模块的通用部分，用于 NixOS 集成
+      homeManagerNixosModule = {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.extraSpecialArgs = { inherit inputs username pkgs; }; # 传递 pkgs
+        home-manager.users.${username} = import ./home/${username}/home.nix;
+      };
 
     in
     {
       # --- NixOS 系统配置 ---
-      nixosConfigurations."${nixosHostname}" = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs username; # 将 inputs 和 username 传递给 NixOS 模块
-          # 你也可以在这里传递 home-manager 本身，如果模块需要
-          # home-manager = home-manager;
+      nixosConfigurations = {
+        "nixos-pc" = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs username pkgs; }; # 传递 pkgs 给模块
+          modules = [
+            ./system/my-nixos-machine/configuration.nix # 普通 PC 的主配置
+            home-manager.nixosModules.home-manager     # 集成 Home Manager
+            homeManagerNixosModule                     # 应用 Home Manager 用户配置
+          ];
         };
-        modules = [
-          # 导入你的主 NixOS 配置文件
-          ./system/${nixosHostname}/configuration.nix
 
-          # 添加 Home Manager 的 NixOS 模块
-          home-manager.nixosModules.home-manager
-          {
-            # 在这里配置 Home Manager 如何管理用户
-            home-manager.useGlobalPkgs = true;   # 推荐，让 Home Manager 使用系统级的 Nixpkgs
-            home-manager.useUserPackages = true; # 允许用户在 Home Manager 中定义自己的包
-
-            # 传递额外的参数给你的 home.nix 文件 (如果需要)
-            home-manager.extraSpecialArgs = { inherit inputs username; };
-
-            # 导入特定用户的 Home Manager 配置
-            # 这会将 ./home/${username}/home.nix 的配置应用给 NixOS 系统中的 "zero" 用户
-            home-manager.users.${username} = import ./home/${username}/home.nix;
-
-            # (或者，如果你的 home.nix 需要 pkgs 作为参数)
-            # home-manager.users.${username} = { pkgs, ... }: import ./home/${username}/home.nix { inherit pkgs inputs username; };
-          }
-        ];
+        "nixos-wsl" = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs username pkgs; }; # 传递 pkgs 给模块
+          modules = [
+            ./system/my-nixos-machine/wsl.nix          # WSL 的主配置
+            home-manager.nixosModules.home-manager     # 集成 Home Manager
+            homeManagerNixosModule                     # 应用 Home Manager 用户配置
+          ];
+        };
       };
 
-
+      # --- Home Manager 独立配置 (可选) ---
+      # 如果你想单独构建和切换 Home Manager 配置，不通过 NixOS 系统配置
       homeConfigurations."${username}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs; # 使用上面定义的 pkgs
-        modules = [ ./home/${username}/home.nix ]; # 确保这个路径是正确的
-        extraSpecialArgs = { inherit inputs username; };
+        modules = [ ./home/${username}/home.nix ];
+        extraSpecialArgs = { inherit inputs username pkgs; }; # 传递 pkgs
       };
     };
 }
