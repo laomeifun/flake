@@ -39,14 +39,14 @@
   # Shell 配置 (以 Zsh 为例)
   programs.zsh = {
     enable = true;
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     enableCompletion = true;
     # 你可以在这里添加更多的 Zsh 配置，例如插件、别名等
-    # ohMyZsh = {
-    #   enable = true;
-    #   plugins = [ "git" "fzf" ];
-    #   theme = "agnoster";
-    # };
+    ohMyZsh = {
+      enable = true;
+      plugins = [ "git" "fzf" ];
+      theme = "agnoster";
+    };
     # shellAliases = {
     #   ll = "ls -l";
     #   update = "sudo nixos-rebuild switch --flake .#my-nixos-machine && home-manager switch --flake .#${username}";
@@ -76,27 +76,11 @@
     # 你可以在这里添加 Neovim 的插件和配置
   };
 
-  # 管理你的 dotfiles
-  # 例如，创建一个 .zshrc 的符号链接或者直接写入内容
-  home.file.".zshrc_from_hm" = {
-    text = ''
-      # 由 Home Manager 管理的 Zsh 配置
-      # 你可以在这里添加自定义的 Zsh 设置
-      # 如果你使用了 programs.zsh.ohMyZsh，很多配置会自动处理
 
-      # 示例：设置编辑器
-      export EDITOR='nvim';
-    '';
-  };
 
-  # 如果你想链接一个已经存在的配置文件，例如 .gitconfig_example
-  # home.file.".gitconfig" = {
-  #   source = ./dotfiles/.gitconfig_example; # 假设你的 .gitconfig_example 在 dotfiles 目录下
-  #   # target = ".gitconfig"; # 默认目标是相对于 home.homeDirectory 的路径
-  # };
 
 
   # 设置状态版本，这对于确保配置的向后兼容性很重要。
   # 通常设置为你开始使用 Home Manager 时的版本。
-  home.stateVersion = "23.11"; # 或者你当前使用的 Home Manager 版本
+  home.stateVersion = "25.05"; # 或者你当前使用的 Home Manager 版本
 }

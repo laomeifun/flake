@@ -62,9 +62,7 @@
         ];
       };
 
-      # --- (可选) 独立的 Home Manager 配置 ---
-      # 你仍然可以保留这个，如果你想在非 NixOS 系统上使用同样的 home.nix，
-      # 或者在 NixOS 上也想用 `home-manager switch` 命令独立管理 (不常见)
+
       homeConfigurations."${username}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs; # 使用上面定义的 pkgs
         modules = [ ./home/${username}/home.nix ]; # 确保这个路径是正确的
