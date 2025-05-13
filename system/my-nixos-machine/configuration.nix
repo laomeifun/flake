@@ -40,7 +40,7 @@
 
   # --- 系统状态版本 ---
   # 非常重要，通常设置为你首次安装 NixOS 时的版本
-  system.stateVersion = "23.11"; # 或者你安装时使用的版本，如 "24.05"
+  system.stateVersion = "25.05"; # 或者你安装时使用的版本，如 "24.05"
 
   # !!! 注意: Home Manager 的用户配置已经通过 flake.nix 集成 !!!
   # 你不需要在这里再次添加 home-manager.users.${username} = ...

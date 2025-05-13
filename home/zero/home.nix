@@ -16,8 +16,7 @@
   home.packages = with pkgs; [
     # 开发工具
     git
-    neovim # 或者 vim
-    vscode
+    # vscode
 
     # Shell 工具
     zsh
@@ -26,14 +25,14 @@
     ripgrep
     fd
 
-    # 常用工具
-    firefox
-    htop
-    curl
-    wget
+    # # 常用工具
+    # firefox
+    # htop
+    # curl
+    # wget
 
-    # (可选) Nix 相关工具
-    nix-output-monitor # nom
+    # # (可选) Nix 相关工具
+    # nix-output-monitor # nom
   ];
 
   # Shell 配置 (以 Zsh 为例)
@@ -42,7 +41,7 @@
     autosuggestion.enable = true;
     enableCompletion = true;
     # 你可以在这里添加更多的 Zsh 配置，例如插件、别名等
-    ohMyZsh = {
+    oh-my-zsh = {
       enable = true;
       plugins = [ "git" "fzf" ];
       theme = "agnoster";
